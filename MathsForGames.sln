@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LCECS", "LCECS\LCECS.csproj", "{A8140AF0-44A3-49E6-A454-611102DF0CB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raylib-cs", "Raylib-cs\Raylib-cs\Raylib-cs.csproj", "{A4448A2C-110C-4DA2-BFE1-91FEED088D6F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B3A7D67B-9C9E-449B-BEEE-AA59D3AA3B60}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{50E7E1A2-E0AE-468C-8DB7-A9EACF6A3F40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "Game\Game.csproj", "{177062E8-D766-4152-87BB-6EEF26B7A3BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LCUtilities", "LCUtilities\LCUtilities.csproj", "{CADE2616-8287-4B8E-96AB-E7C8DE1FE327}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8140AF0-44A3-49E6-A454-611102DF0CB7}.Debug|x86.ActiveCfg = Debug|x86
+		{A8140AF0-44A3-49E6-A454-611102DF0CB7}.Debug|x86.Build.0 = Debug|x86
+		{A8140AF0-44A3-49E6-A454-611102DF0CB7}.Release|x86.ActiveCfg = Release|x86
+		{A8140AF0-44A3-49E6-A454-611102DF0CB7}.Release|x86.Build.0 = Release|x86
+		{A4448A2C-110C-4DA2-BFE1-91FEED088D6F}.Debug|x86.ActiveCfg = Debug|x86
+		{A4448A2C-110C-4DA2-BFE1-91FEED088D6F}.Debug|x86.Build.0 = Debug|x86
+		{A4448A2C-110C-4DA2-BFE1-91FEED088D6F}.Release|x86.ActiveCfg = Release|x86
+		{A4448A2C-110C-4DA2-BFE1-91FEED088D6F}.Release|x86.Build.0 = Release|x86
+		{B3A7D67B-9C9E-449B-BEEE-AA59D3AA3B60}.Debug|x86.ActiveCfg = Debug|x86
+		{B3A7D67B-9C9E-449B-BEEE-AA59D3AA3B60}.Debug|x86.Build.0 = Debug|x86
+		{B3A7D67B-9C9E-449B-BEEE-AA59D3AA3B60}.Release|x86.ActiveCfg = Release|x86
+		{B3A7D67B-9C9E-449B-BEEE-AA59D3AA3B60}.Release|x86.Build.0 = Release|x86
+		{177062E8-D766-4152-87BB-6EEF26B7A3BC}.Debug|x86.ActiveCfg = Debug|x86
+		{177062E8-D766-4152-87BB-6EEF26B7A3BC}.Debug|x86.Build.0 = Debug|x86
+		{177062E8-D766-4152-87BB-6EEF26B7A3BC}.Release|x86.ActiveCfg = Release|x86
+		{177062E8-D766-4152-87BB-6EEF26B7A3BC}.Release|x86.Build.0 = Release|x86
+		{CADE2616-8287-4B8E-96AB-E7C8DE1FE327}.Debug|x86.ActiveCfg = Debug|x86
+		{CADE2616-8287-4B8E-96AB-E7C8DE1FE327}.Debug|x86.Build.0 = Debug|x86
+		{CADE2616-8287-4B8E-96AB-E7C8DE1FE327}.Release|x86.ActiveCfg = Release|x86
+		{CADE2616-8287-4B8E-96AB-E7C8DE1FE327}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8140AF0-44A3-49E6-A454-611102DF0CB7} = {50E7E1A2-E0AE-468C-8DB7-A9EACF6A3F40}
+		{A4448A2C-110C-4DA2-BFE1-91FEED088D6F} = {50E7E1A2-E0AE-468C-8DB7-A9EACF6A3F40}
+		{CADE2616-8287-4B8E-96AB-E7C8DE1FE327} = {50E7E1A2-E0AE-468C-8DB7-A9EACF6A3F40}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCBD0105-8B68-4795-8E22-B1766C91543D}
+	EndGlobalSection
+EndGlobal
