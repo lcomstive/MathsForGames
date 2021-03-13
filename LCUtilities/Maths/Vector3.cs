@@ -9,6 +9,7 @@ namespace LCUtils
 		public float x { get => m_Components[0]; set => m_Components[0] = value; }
 		public float y { get => m_Components[1]; set => m_Components[1] = value; }
 		public float z { get => m_Components[2]; set => m_Components[2] = value; }
+		public Vector2 xy => new Vector2(x, y);
 
 		public Vector3 normalized
 		{
@@ -25,6 +26,8 @@ namespace LCUtils
 		public static Vector3 down => new Vector3(0, -1, 0);
 		public static Vector3 left => new Vector3(-1, 0, 0);
 		public static Vector3 right => new Vector3(1, 0, 0);
+		public static Vector3 forward => new Vector3(0, 0, 1);
+		public static Vector3 backward => new Vector3(0, 0, -1);
 
 		#region Constructors
 		public Vector3(float x = 0, float y = 0, float z = 0) => m_Components = new float[] { x, y, z };
@@ -51,6 +54,8 @@ namespace LCUtils
 				m_Components[i] /= magnitude;
 		}
 
+		public float Angle(Vector3 other) => (float)Math.Acos(Dot(other) / (Magnitude() * other.Magnitude()));
+
 		#region Operator Overloads
 		/// ADD ///
 		public static Vector3 operator +(Vector3 a, Vector2 b) => new Vector3(a.x + b.x, a.y + b.y, a.z);
@@ -59,6 +64,7 @@ namespace LCUtils
 		public static Vector3 operator +(Vector2 a, Vector3 b) => b + a;
 
 		/// SUBTRACT ///
+		public static Vector3 operator -(Vector3 a) => new Vector3(-a.x, -a.y, -a.z);
 		public static Vector3 operator -(Vector3 a, Vector2 b) => new Vector3(a.x - b.x, a.y - b.y, a.z);
 		public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 
@@ -74,9 +80,11 @@ namespace LCUtils
 		public static implicit operator Vector3(System.Numerics.Vector3 v) => new Vector3(v.X, v.Y, v.Z);
 		public static implicit operator System.Numerics.Vector3(Vector3 v) => new System.Numerics.Vector3(v.x, v.y, v.z);
 
-		public float this[uint i]
+		public override string ToString() => $"({x}, {y}, {z})";
+
+		public float this[int i]
 		{
-			get => i >= 3 ? 0 : m_Components[i];
+			get => i >= 3 || i < 0 ? 0 : m_Components[i];
 			set
 			{
 				if (i >= 3)

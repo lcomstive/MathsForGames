@@ -6,6 +6,19 @@ namespace LCUtils
 	{
 		private float[] m_Components;
 
+		public static Matrix3 Identity => new Matrix3(
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1
+			);
+
+		public Matrix3()
+		{
+			m_Components = new float[3 * 3];
+			for (int i = 0; i < m_Components.Length; i++)
+				m_Components[i] = 0;
+		}
+
 		public Matrix3(float[] components)
 		{
 			m_Components = new float[3 * 3];
@@ -30,9 +43,39 @@ namespace LCUtils
 			};
 		}
 
-		public Vector3 this[uint i]
+		public static Vector3 operator *(Matrix3 m, Vector3 v) => new Vector3(
+			m[0][0] * v[0] + m[1][0] * v[1] + m[2][0] * v[2],
+			m[0][1] * v[0] + m[1][1] * v[1] + m[2][1] * v[2],
+			m[0][2] * v[0] + m[1][2] * v[1] + m[2][2] * v[2]
+			);
+
+		public static Vector3 operator *(Vector3 v, Matrix3 m) => new Vector3(
+			 m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
+			 m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
+			 m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]
+			 );
+
+		public static Matrix3 operator *(Matrix3 a, Matrix3 b)
 		{
-			get => i >= 3 ? Vector3.zero : new Vector3(m_Components[i], m_Components[i + 3], m_Components[i + 6]);
+			Matrix3 value = new Matrix3();
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					for (int k = 0; k < 3; k++)
+						value[j, i] += a[k, i] * b[j, k];
+			return value;
+		}
+
+		public override string ToString()
+		{
+			string s = string.Empty;
+			for (int i = 0; i < m_Components.Length; i++)
+				s += m_Components[i] + (i < m_Components.Length - 1 ? ", " : "");
+			return $"[{s}]";
+		}
+
+		public Vector3 this[int i]
+		{
+			get => i >= 3 || i < 0 ? Vector3.zero : new Vector3(m_Components[i], m_Components[i + 3], m_Components[i + 6]);
 			set
 			{
 				if (i >= 3)
@@ -43,9 +86,9 @@ namespace LCUtils
 			}
 		}
 
-		public float this[uint i, uint j]
+		public float this[int i, int j]
 		{
-			get => (i >= 3 || j >= 3) ? 0 : m_Components[i + (j * 3)];
+			get => (i >= 3 || j >= 3 || i < 0 || j < 0) ? 0 : m_Components[i + (j * 3)];
 			set
 			{
 				if (i >= 3 || j >= 3)

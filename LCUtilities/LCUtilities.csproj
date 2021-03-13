@@ -2,12 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Platforms>x86</Platforms>
+    <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>LCUtils</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Raylib-cs\Raylib-cs\Raylib-cs.csproj" />
-  </ItemGroup>
 
 </Project>

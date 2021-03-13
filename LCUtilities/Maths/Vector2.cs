@@ -43,11 +43,17 @@ namespace LCUtils
 			m_Components[1] /= magnitude;
 		}
 
+		public float Distance(Vector2 other) => (this - other).Magnitude();
+		public static float Distance(Vector2 a, Vector2 b) => a.Distance(b);
+
+		public float Angle(Vector2 other) => (float)Math.Acos(Dot(other) / (Magnitude() * other.Magnitude()));
+
 		#region Operator Overloads
 		/// ADD ///
 		public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.x + b.x, a.y + b.y);
 
 		/// SUBTRACT ///
+		public static Vector2 operator -(Vector2 a) => new Vector2(-a.x, -a.y);
 		public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.x - b.x, a.y - b.y);
 
 		/// DIVIDE ///
@@ -59,12 +65,15 @@ namespace LCUtils
 		public static Vector2 operator *(float value, Vector2 a) => new Vector2(a.x * value, a.y * value);
 
 		/// CONVERSIONS ///
+		// System.Numerics.Vector2
 		public static implicit operator Vector2(System.Numerics.Vector2 v) => new Vector2(v.X, v.Y);
 		public static implicit operator System.Numerics.Vector2(Vector2 v) => new System.Numerics.Vector2(v.x, v.y);
 
-		public float this[uint i]
+		public override string ToString() => $"({x}, {y})";
+
+		public float this[int i]
 		{
-			get => i >= 2 ? 0 : m_Components[i];
+			get => i >= 2 || i < 0 ? 0 : m_Components[i];
 			set
 			{
 				if (i >= 2)

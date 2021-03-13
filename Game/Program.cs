@@ -1,6 +1,6 @@
 ﻿using System;
-using Raylib_cs;
 using Game;
+using Raylib_cs;
 
 class Program
 {
@@ -12,6 +12,7 @@ class Program
 
 		/// INITIALIZE WINDOW ///
 		string gameTitle = $"Game (v{GlobalSettings.CurrentGameVersion})";
+
 		Raylib.InitWindow(GlobalSettings.WindowWidth, GlobalSettings.WindowHeight, gameTitle);
 		Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(GlobalSettings.MonitorIndex));
 
@@ -22,8 +23,7 @@ class Program
 		Application app = new Application();
 		app.Init();
 
-		/// GAME LOOP ///
-		while(!Raylib.WindowShouldClose())
+		while (!Raylib.WindowShouldClose())
 		{
 			Raylib.BeginDrawing();
 			Raylib.ClearBackground(Color.BLACK);

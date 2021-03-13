@@ -31,12 +31,12 @@ namespace LCECS
 		public EntityID ID { get; private set; }
 
 		/// <summary>Reference to world that this entity belongs to</summary>
-		internal World m_World;
+		internal EntityWorld m_World;
 
 		// Constructor being internal prevents outside code from incorrectly instantiating an entity
 		/// <param name="parent">World that instantiated this entity</param>
 		/// <param name="id">Unique identifier</param>
-		internal Entity(World parent, EntityID id)
+		internal Entity(EntityWorld parent, EntityID id)
 		{
 			ID = id;
 			m_World = parent;

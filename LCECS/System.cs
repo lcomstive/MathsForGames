@@ -6,9 +6,9 @@ namespace LCECS
 {
 	public abstract class System
 	{
-		protected internal World World;
+		protected internal EntityWorld World;
 
-		internal void PreInit(World parent)
+		internal void PreInit(EntityWorld parent)
 		{
 			World = parent;
 			Init();

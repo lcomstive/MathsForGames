@@ -1,15 +1,20 @@
 ﻿using LCECS;
+using System;
 using LCUtils;
-using Raylib_cs;
-using System.Diagnostics;
-using Game.Components;
 using Game.Systems;
+using Game.Graphics;
+using Game.Components;
+using System.Diagnostics;
+using Game.Components.Physics;
+using Game.Components.Physics2D;
+using Raylib_cs;
 
 namespace Game
 {
 	public class Application
 	{
-		private World m_World;
+		private EntityWorld m_World;
+		private Renderer m_Renderer;
 
 		/// FPS TIMING ///
 		private int m_FrameCount = 0; // Frames this second
@@ -21,39 +26,61 @@ namespace Game
 
 		/// PLAYER ///
 		private const int PlayerSpeed = 100;
+		private Camera m_PlayerCamera = new Camera(new Vector3(0, 0, -10));
 
 		// Main Body
 		private Entity m_Player;
 		private TransformComponent m_PlayerTransform;
+		private Rigidbody2DComponent m_PlayerRigidbody;
 
-		// Player Spinner
-		private const float PlayerSpinnerSpeed = 2.5f;
-		private const float PlayerSpinnerDistance = 75;
-		private TransformComponent m_PlayerSpinnerTransform;
+#if DEBUG
+		DrawDebug2DCollidersSystem m_DrawDebug2DCollidersSystem;
+#endif
 
 		public void Init()
 		{
-			m_World = new World();
+			m_World = new EntityWorld();
+			m_Renderer = new Renderer();
+
 			m_Stopwatch = new Stopwatch();
 			m_Stopwatch.Start();
 
-			m_World.AddSystem<DrawColouredRectSystem>();
+			m_World.AddSystem<Physics2DSystem>();
+
 #if DEBUG
-			m_World.AddSystem<DrawDebugInfoSystem>();
+			m_DrawDebug2DCollidersSystem = m_World.AddSystem<DrawDebug2DCollidersSystem>(); // Debug physics colliders
+			m_DrawDebug2DCollidersSystem.Draw = false; // Disable by default
 #endif
 
+			/// PLAYER ///
 			m_Player = m_World.CreateEntity();
-			m_PlayerTransform = m_Player.AddComponent<TransformComponent>();
-			m_PlayerTransform.Size = new Vector2(50, 50);
-			m_PlayerTransform.Position = new Vector3(Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 2, -1);
-			m_Player.AddComponent<ColouredRectComponent>().Colour = Colour.Red;
 
-			Entity playerSpinner = m_World.CreateEntity();
-			m_PlayerSpinnerTransform = playerSpinner.AddComponent<TransformComponent>();
-			m_PlayerSpinnerTransform.Parent = m_Player;
-			m_PlayerSpinnerTransform.Size = new Vector2(30, 30);
-			m_PlayerSpinnerTransform.Position = new Vector3(0, -75);
-			playerSpinner.AddComponent<ColouredRectComponent>().Colour = Colour.Blue;
+			m_PlayerTransform = m_Player.AddComponent<TransformComponent>();
+			m_PlayerTransform.Position = new Vector3(0, 0, 0);
+			m_PlayerTransform.Scale = new Vector3(100, 100, 100);
+			
+			m_PlayerRigidbody = m_Player.AddComponent<Rigidbody2DComponent>();
+			m_Player.AddComponent<ColouredRectComponent>().Colour = Colour.Red;
+			m_Player.AddComponent<Box2DColliderComponent>().Size = m_PlayerTransform.Scale.xy;
+
+			/// CREATE FLOOR ///
+			Entity floor = m_World.CreateEntity();
+			TransformComponent floorTransform = floor.AddComponent<TransformComponent>();
+			floorTransform.Position = new Vector3(100, 0, 0);
+			floorTransform.Scale = new Vector3(50, 1, 50);
+			// floor.AddComponent<ColouredRectComponent>().Colour = new Colour(255, 255, 255, 100);
+			floor.AddComponent<Box2DColliderComponent>().Size = floorTransform.Scale.xy;
+			floor.AddComponent<Rigidbody2DComponent>().EnableForces = false;
+
+			/// RANDOM CIRCLE ///
+			Entity circle = m_World.CreateEntity();
+			TransformComponent circleTransform = circle.AddComponent<TransformComponent>();
+			circleTransform.Scale = new Vector3(25, 25, 25);
+			circleTransform.Position = new Vector3(200, 200);
+
+			circle.AddComponent<Rigidbody2DComponent>();
+			circle.AddComponent<ColouredCircleComponent>().Colour = Colour.Blue;
+			circle.AddComponent<Circle2DColliderComponent>().Radius = circleTransform.Scale.x;
 		}
 
 		public void Destroy() => m_World.Dispose();
@@ -82,16 +109,49 @@ namespace Game
 			/// PLAYER MOVEMENT ///
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_A)) m_PlayerTransform.Position.x -= PlayerSpeed * deltaTime;
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_D)) m_PlayerTransform.Position.x += PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) m_PlayerTransform.Position.y += PlayerSpeed * deltaTime;
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) m_PlayerTransform.Position.y -= PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) m_PlayerTransform.Position.y += PlayerSpeed * deltaTime;
 
-			m_PlayerSpinnerTransform.Position.x = (float)System.Math.Sin(m_GameTime * PlayerSpinnerSpeed) * PlayerSpinnerDistance;
-			m_PlayerSpinnerTransform.Position.y = (float)System.Math.Cos(m_GameTime * PlayerSpinnerSpeed) * PlayerSpinnerDistance;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))  m_PlayerCamera.Position.x += PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) m_PlayerCamera.Position.x -= PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_UP))	 m_PlayerCamera.Position.y += PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))  m_PlayerCamera.Position.y -= PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_MINUS)) m_PlayerCamera.Position.z += PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_EQUAL)) m_PlayerCamera.Position.z -= PlayerSpeed * deltaTime;
+
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_SPACE))
+			{
+				m_PlayerRigidbody.Velocity += new Vector2(0, 10);
+				Console.WriteLine($"Velocity: {m_PlayerRigidbody.Velocity}");
+			}
+
+			m_PlayerTransform.Rotation.z += deltaTime * 10f;
 
 			m_World.Update(deltaTime);
 
+			m_Renderer.Draw(m_PlayerCamera, m_World);
+
+			DrawDebugInfo(deltaTime);
+		}
+
+		private void DrawDebugInfo(float deltaTime)
+        {
+#if DEBUG
 			if (GlobalSettings.ShowFPS)
-				Raylib.DrawText($"FPS: {m_FPS}", 10, 10, 20, Color.GREEN);
+			{
+				Color textColor = new Color(255, 255, 255, 150);
+
+				Raylib.DrawText($"Frame Time: {deltaTime} ({m_FPS} FPS)", 5, 5, 20, textColor);
+				Raylib.DrawText($"Entities: {m_World.EntityCount}", 5, 25, 20, textColor);
+			}
+
+			if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB)) // Toggle drawing debug 2D colliders
+				m_DrawDebug2DCollidersSystem.Draw = !m_DrawDebug2DCollidersSystem.Draw;
+
+#else
+			if (GlobalSettings.ShowFPS)
+				Raylib.DrawText($"FPS: {m_FPS}", 10, 10, 16, Color.GREEN);
+#endif
 		}
 
 		private void ToggleFullscreen()

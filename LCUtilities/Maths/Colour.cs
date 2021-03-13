@@ -15,6 +15,7 @@
 		public static Colour Green => new Colour(0, 255);
 		public static Colour Blue => new Colour(0, 0, 255);
 
+		public Colour(uint components) => m_Components = components;
 		public Colour(byte red = 0, byte green = 0, byte blue = 0, byte alpha = 255)
 		{
 			m_Components = (uint)(
@@ -37,8 +38,5 @@
 
 		public override string ToString() => $"({r}, {g}, {b}, {a})";
 		public string ToHexString() => $"#{System.Convert.ToString(m_Components, 16)}";
-
-		public static implicit operator Colour(Raylib_cs.Color c) => new Colour(c.r, c.g, c.b, c.a);
-		public static implicit operator Raylib_cs.Color(Colour c) => new Raylib_cs.Color(c.r, c.g, c.b, c.a);
 	}
 }

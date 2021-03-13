@@ -3,13 +3,17 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <Platforms>x86</Platforms>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Raylib-cs" Version="3.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LCECS\LCECS.csproj" />
+    <ProjectReference Include="..\LCPhysics\LCPhysics.csproj" />
     <ProjectReference Include="..\LCUtilities\LCUtilities.csproj" />
-    <ProjectReference Include="..\Raylib-cs\Raylib-cs\Raylib-cs.csproj" />
   </ItemGroup>
 
 </Project>

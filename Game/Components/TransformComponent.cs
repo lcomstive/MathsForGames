@@ -12,14 +12,14 @@ namespace Game.Components
 		public Vector3 Position = Vector3.zero;
 
 		/// <summary>
-		/// 2D Size, relative to world (width, height).
+		/// 3D Scale, relative to world (width, height).
 		/// </summary>
-		public Vector2 Size = new Vector2(1, 1);
+		public Vector3 Scale = new Vector3(1, 1, 1);
 
 		/// <summary>
-		/// Angle of rotation, in degrees, relative to world up (or (0, 1) as a vector)
+		/// Euler angles of rotation, in degrees
 		/// </summary>
-		public float Rotation = 0;
+		public Vector3 Rotation = Vector3.zero;
 
 		/// <summary>
 		/// The entity this component moves relative to
