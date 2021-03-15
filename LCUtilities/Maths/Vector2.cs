@@ -65,11 +65,20 @@ namespace LCUtils
 		public static Vector2 operator *(float value, Vector2 a) => new Vector2(a.x * value, a.y * value);
 
 		/// CONVERSIONS ///
-		// System.Numerics.Vector2
 		public static implicit operator Vector2(System.Numerics.Vector2 v) => new Vector2(v.X, v.Y);
 		public static implicit operator System.Numerics.Vector2(Vector2 v) => new System.Numerics.Vector2(v.x, v.y);
 
 		public override string ToString() => $"({x}, {y})";
+
+		public override bool Equals(object obj)
+		{
+			Vector3 other = obj as Vector3;
+			if (other == null) // not same type)
+				return false;
+			return x == other.x && y == other.y;
+		}
+
+		public override int GetHashCode() => base.GetHashCode();
 
 		public float this[int i]
 		{

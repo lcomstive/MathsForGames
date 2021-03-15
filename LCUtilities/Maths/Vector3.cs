@@ -33,7 +33,7 @@ namespace LCUtils
 		public Vector3(float x = 0, float y = 0, float z = 0) => m_Components = new float[] { x, y, z };
 
 		// Copy constructors
-		public Vector3(Vector2 input) : this(input.x, input.y) { }
+		public Vector3(Vector2 input, float z = 0) : this(input.x, input.y, z) { }
 		public Vector3(Vector3 input) : this(input.x, input.y, input.z) { }
 		#endregion
 
@@ -76,11 +76,29 @@ namespace LCUtils
 		public static Vector3 operator *(Vector3 a, float value) => new Vector3(a.x * value, a.y * value, a.z * value);
 		public static Vector3 operator *(float value, Vector3 a) => new Vector3(a.x * value, a.y * value, a.z * value);
 
+		public static bool operator ==(Vector3 a, Vector3 b) => a.x == b.x && a.y == b.y && a.z == b.z;
+		public static bool operator !=(Vector3 a, Vector3 b) => a.x != b.x || a.y != b.y || a.z != b.z;
+
+		public static bool operator ==(Vector3 a, Vector2 b) => a.x == b.x && a.y == b.y && a.z == 0;
+		public static bool operator !=(Vector3 a, Vector2 b) => a.x != b.x || a.y != b.y || a.z != 0;
+
 		/// CONVERSIONS ///
+		public static implicit operator Vector3(Vector2 v) => new Vector3(v.x, v.y, 0);
+
 		public static implicit operator Vector3(System.Numerics.Vector3 v) => new Vector3(v.X, v.Y, v.Z);
 		public static implicit operator System.Numerics.Vector3(Vector3 v) => new System.Numerics.Vector3(v.x, v.y, v.z);
 
 		public override string ToString() => $"({x}, {y}, {z})";
+
+		public override bool Equals(object obj)
+		{
+			Vector3 other = obj as Vector3;
+			if (other == null) // not same type)
+				return false;
+			return x == other.x && y == other.y;
+		}
+
+		public override int GetHashCode() => base.GetHashCode();
 
 		public float this[int i]
 		{

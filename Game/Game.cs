@@ -24,18 +24,17 @@ namespace Game
 		private float m_GameTime = 0; // Time since start of game
 		private Stopwatch m_Stopwatch;
 
+		/// CAMERA ///
+		private const float CameraSpeed = 300;
+		private Camera m_PlayerCamera;
+
 		/// PLAYER ///
-		private const int PlayerSpeed = 100;
-		private Camera m_PlayerCamera = new Camera(new Vector3(0, 0, -10));
+		private const float PlayerSpeed = 250;
 
 		// Main Body
 		private Entity m_Player;
 		private TransformComponent m_PlayerTransform;
 		private Rigidbody2DComponent m_PlayerRigidbody;
-
-#if DEBUG
-		DrawDebug2DCollidersSystem m_DrawDebug2DCollidersSystem;
-#endif
 
 		public void Init()
 		{
@@ -47,39 +46,38 @@ namespace Game
 
 			m_World.AddSystem<Physics2DSystem>();
 
-#if DEBUG
-			m_DrawDebug2DCollidersSystem = m_World.AddSystem<DrawDebug2DCollidersSystem>(); // Debug physics colliders
-			m_DrawDebug2DCollidersSystem.Draw = false; // Disable by default
-#endif
+			/// CAMERA ///
+			m_PlayerCamera = new Camera(new Vector3(0, 0, -1024));
+			m_PlayerCamera.Far = 1250;
 
 			/// PLAYER ///
 			m_Player = m_World.CreateEntity();
 
 			m_PlayerTransform = m_Player.AddComponent<TransformComponent>();
 			m_PlayerTransform.Position = new Vector3(0, 0, 0);
-			m_PlayerTransform.Scale = new Vector3(100, 100, 100);
+			m_PlayerTransform.Scale = new Vector3(100, 100);
 			
 			m_PlayerRigidbody = m_Player.AddComponent<Rigidbody2DComponent>();
-			m_Player.AddComponent<ColouredRectComponent>().Colour = Colour.Red;
+			m_Player.AddComponent<ColouredRectComponent>().Colour = Colour.Purple;
 			m_Player.AddComponent<Box2DColliderComponent>().Size = m_PlayerTransform.Scale.xy;
 
 			/// CREATE FLOOR ///
 			Entity floor = m_World.CreateEntity();
 			TransformComponent floorTransform = floor.AddComponent<TransformComponent>();
-			floorTransform.Position = new Vector3(100, 0, 0);
-			floorTransform.Scale = new Vector3(50, 1, 50);
-			// floor.AddComponent<ColouredRectComponent>().Colour = new Colour(255, 255, 255, 100);
+			floorTransform.Position = new Vector3(0, 250, 0);
+			floorTransform.Scale = new Vector3(500, 5);
+			floor.AddComponent<ColouredRectComponent>().Colour = new Colour(255, 255, 255, 100);
 			floor.AddComponent<Box2DColliderComponent>().Size = floorTransform.Scale.xy;
 			floor.AddComponent<Rigidbody2DComponent>().EnableForces = false;
 
 			/// RANDOM CIRCLE ///
 			Entity circle = m_World.CreateEntity();
 			TransformComponent circleTransform = circle.AddComponent<TransformComponent>();
-			circleTransform.Scale = new Vector3(25, 25, 25);
 			circleTransform.Position = new Vector3(200, 200);
+			circleTransform.Scale = new Vector3(30, 30);
 
 			circle.AddComponent<Rigidbody2DComponent>();
-			circle.AddComponent<ColouredCircleComponent>().Colour = Colour.Blue;
+			circle.AddComponent<ColouredCircleComponent>().Colour = Colour.Yellow;
 			circle.AddComponent<Circle2DColliderComponent>().Radius = circleTransform.Scale.x;
 		}
 
@@ -102,6 +100,7 @@ namespace Game
 			}
 			m_FrameCount++;
 
+			#region Input
 			/// TOGGLE FULLSCREEN STATE ///
 			if (Raylib.IsKeyPressed(KeyboardKey.KEY_F11))
 				ToggleFullscreen();
@@ -112,42 +111,73 @@ namespace Game
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_W)) m_PlayerTransform.Position.y -= PlayerSpeed * deltaTime;
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_S)) m_PlayerTransform.Position.y += PlayerSpeed * deltaTime;
 
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))  m_PlayerCamera.Position.x += PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) m_PlayerCamera.Position.x -= PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_UP))	 m_PlayerCamera.Position.y += PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))  m_PlayerCamera.Position.y -= PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_MINUS)) m_PlayerCamera.Position.z += PlayerSpeed * deltaTime;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_EQUAL)) m_PlayerCamera.Position.z -= PlayerSpeed * deltaTime;
+			/// CAMERA CONTROL ///
+			Vector3 playerCameraPosition = new Vector3(m_PlayerCamera.Position);
+			float cameraSpeed = CameraSpeed * deltaTime * (m_PlayerCamera.Orthographic ? 1f : -1f);
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))	 playerCameraPosition.x += cameraSpeed;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) playerCameraPosition.x -= cameraSpeed;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_UP))	 playerCameraPosition.y += cameraSpeed;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))  playerCameraPosition.y -= cameraSpeed;
+			m_PlayerCamera.Position = playerCameraPosition;
 
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_SPACE))
+			// Change FOV (only affects perspective camera mode)
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_MINUS)) m_PlayerCamera.FOV += PlayerSpeed * deltaTime;
+			if (Raylib.IsKeyDown(KeyboardKey.KEY_EQUAL)) m_PlayerCamera.FOV -= PlayerSpeed * deltaTime;
+
+			// Switch between orthographic and perspective
+			if (Raylib.IsKeyPressed(KeyboardKey.KEY_LEFT_ALT))
+			{
+				m_PlayerCamera.Orthographic = !m_PlayerCamera.Orthographic;
+
+				// If perspective mode, set Camera.Up to Vector3.down to flip y axis (not exactly sure why not during orthographic?)
+				m_PlayerCamera.Up = m_PlayerCamera.Orthographic ? Vector3.up : Vector3.down; // Because Raylib
+			}
+
+			/// TEST PHYSICS SYSTEM ///
+			///      TEMPORARY      ///
+			if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
 			{
 				m_PlayerRigidbody.Velocity += new Vector2(0, 10);
 				Console.WriteLine($"Velocity: {m_PlayerRigidbody.Velocity}");
 			}
 
+			// Toggle drawing debug 2D colliders
+			if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB))
+				m_Renderer.DrawDebugAABBs = !m_Renderer.DrawDebugAABBs;
+			#endregion
+
+			// Rotate the player 10 degrees every second, testing rotation
 			m_PlayerTransform.Rotation.z += deltaTime * 10f;
 
+			/// UPDATE THE ENTITY WORLD & SYSTEMS ///
 			m_World.Update(deltaTime);
 
+			/// RENDER ENTITIES ///
 			m_Renderer.Draw(m_PlayerCamera, m_World);
 
+			/// DRAW FPS & DEBUG INFO ///
 			DrawDebugInfo(deltaTime);
 		}
 
 		private void DrawDebugInfo(float deltaTime)
         {
+			Vector2 screenSize = new Vector2(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+
+			Vector3 screenTopLeft = m_PlayerCamera.ScreenToWorld(m_PlayerCamera.Position.xy);
+			screenTopLeft += m_PlayerCamera.Position * (m_PlayerCamera.Orthographic ? -1f : 1f);
+			screenTopLeft -= screenSize / 2f;
+			
+			// TODO: Get UI text to draw in screenspace, not world space
+
 #if DEBUG
 			if (GlobalSettings.ShowFPS)
 			{
-				Color textColor = new Color(255, 255, 255, 150);
+				Color textColor = new Color(255, 255, 255, 200);
 
-				Raylib.DrawText($"Frame Time: {deltaTime} ({m_FPS} FPS)", 5, 5, 20, textColor);
-				Raylib.DrawText($"Entities: {m_World.EntityCount}", 5, 25, 20, textColor);
+				Raylib.DrawText($"Frame Time: {deltaTime} ({m_FPS} FPS)", (int)screenTopLeft.x, (int)screenTopLeft.y, 20, textColor);
+				Raylib.DrawText($"Entities: {m_World.EntityCount}", (int)screenTopLeft.x, (int)screenTopLeft.y + 25, 20, textColor);
+				Raylib.DrawText($"Cam Type: " + (m_PlayerCamera.Orthographic ? "Orth" : "Per"), (int)screenTopLeft.x, (int)screenTopLeft.y + 55, 20, textColor);
 			}
-
-			if (Raylib.IsKeyPressed(KeyboardKey.KEY_TAB)) // Toggle drawing debug 2D colliders
-				m_DrawDebug2DCollidersSystem.Draw = !m_DrawDebug2DCollidersSystem.Draw;
-
 #else
 			if (GlobalSettings.ShowFPS)
 				Raylib.DrawText($"FPS: {m_FPS}", 10, 10, 16, Color.GREEN);

@@ -6,4 +6,8 @@
     <RootNamespace>LCUtils</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Raylib-cs" Version="3.5.0" />
+  </ItemGroup>
+
 </Project>

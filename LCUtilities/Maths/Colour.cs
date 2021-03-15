@@ -9,11 +9,15 @@
 		public byte b { get => GetBlue();	set => SetBlue(value);  }
 		public byte a { get => GetAlpha();	set => SetAlpha(value); }
 
-		public static Colour Black => new Colour(0, 0, 0);
-		public static Colour White => new Colour(255, 255, 255);
-		public static Colour Red => new Colour(255);
-		public static Colour Green => new Colour(0, 255);
-		public static Colour Blue => new Colour(0, 0, 255);
+		public static Colour Black	 => new Colour(0, 0, 0);
+		public static Colour White	 => new Colour(255, 255, 255);
+
+		public static Colour Red	 => new Colour(255);
+		public static Colour Green	 => new Colour(0, 255);
+		public static Colour Blue	 => new Colour(0, 0, 255);
+		public static Colour Yellow	 => new Colour(255, 255, 0);
+		public static Colour Purple  => new Colour(150, 0, 255);
+		public static Colour Magenta => new Colour(255, 0, 255);
 
 		public Colour(uint components) => m_Components = components;
 		public Colour(byte red = 0, byte green = 0, byte blue = 0, byte alpha = 255)
@@ -38,5 +42,8 @@
 
 		public override string ToString() => $"({r}, {g}, {b}, {a})";
 		public string ToHexString() => $"#{System.Convert.ToString(m_Components, 16)}";
+
+		public static implicit operator Colour(Raylib_cs.Color c) => new Colour(c.r, c.g, c.b, c.a);
+		public static implicit operator Raylib_cs.Color(Colour c) => new Raylib_cs.Color(c.r, c.g, c.b, c.a);
 	}
 }
