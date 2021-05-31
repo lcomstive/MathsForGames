@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Platforms>AnyCPU;x64;x86</Platforms>
+		<AssemblyName>TankGame</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Raylib-cs" Version="3.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LCUtilities\LCUtilities.csproj" />
+		<ProjectReference Include="..\LCGameFramework\LCGameFramework.csproj" />
+	</ItemGroup>
+	<Target Name="CopyAssets" AfterTargets="AfterBuild">
+		<Exec Condition="'$(OS)' == 'Unix'" Command="cp -R &quot;$(ProjectDir)Assets/&quot; &quot;$(ProjectDir)$(OutDir)Assets&quot;" />
+		<Exec Condition="'$(OS)' != 'Unix'" Command="xcopy &quot;$(ProjectDir)Assets\&quot; &quot;$(ProjectDir)$(OutDir)Assets\&quot; /S /Y /Q" />
+	</Target>
+
+</Project>

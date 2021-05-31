@@ -1,4 +1,13 @@
+# Visual Studio meta
 .vs/
+
+# JetBrains meta
+.idea/
+
+# Mac OS meta
+.DS_Store
+
+# Build & intermediary files
 bin/
 obj/
 TestResults/

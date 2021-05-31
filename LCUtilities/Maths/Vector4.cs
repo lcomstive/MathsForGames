@@ -64,6 +64,7 @@ namespace LCUtils
 		/// MULTIPLY ///
 		public static Vector4 operator *(Vector4 a, float value) => new Vector4(a.x * value, a.y * value, a.z * value, a.w * value);
 		public static Vector4 operator *(float value, Vector4 a) => new Vector4(a.x * value, a.y * value, a.z * value, a.w * value);
+		public static Vector4 operator *(Vector4 a, Vector4 b) => new Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
 
 		/// CONVERSIONS ///
 		public static implicit operator Vector4(System.Numerics.Vector4 v) => new Vector4(v.X, v.Y, v.Z, v.W);

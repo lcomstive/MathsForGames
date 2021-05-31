@@ -2,7 +2,7 @@
 
 namespace LCUtils
 {
-	public class Vector3
+	public struct Vector3
 	{
 		private float[] m_Components;
 
@@ -21,20 +21,24 @@ namespace LCUtils
 			}
 		}
 
-		public static Vector3 zero => new Vector3();
-		public static Vector3 up => new Vector3(0, 1, 0);
-		public static Vector3 down => new Vector3(0, -1, 0);
-		public static Vector3 left => new Vector3(-1, 0, 0);
-		public static Vector3 right => new Vector3(1, 0, 0);
-		public static Vector3 forward => new Vector3(0, 0, 1);
-		public static Vector3 backward => new Vector3(0, 0, -1);
+		public static Vector3 zero     => new Vector3();
+		public static Vector3 up       => new Vector3( 0,  1,  0);
+		public static Vector3 down     => new Vector3( 0, -1,  0);
+		public static Vector3 left     => new Vector3(-1,  0,  0);
+		public static Vector3 right	   => new Vector3( 1,  0,  0);
+		public static Vector3 forward  => new Vector3( 0,  0,  1);
+		public static Vector3 backward => new Vector3( 0,  0, -1);
 
 		#region Constructors
 		public Vector3(float x = 0, float y = 0, float z = 0) => m_Components = new float[] { x, y, z };
 
 		// Copy constructors
 		public Vector3(Vector2 input, float z = 0) : this(input.x, input.y, z) { }
-		public Vector3(Vector3 input) : this(input.x, input.y, input.z) { }
+		public Vector3(Vector3 input)
+		{
+			m_Components = new float[3];
+			Array.Copy(input.m_Components, m_Components, 3);
+		}
 		#endregion
 
 		public float Dot(Vector3 b) => x * b.x + y * b.y + z * b.z;
@@ -56,6 +60,16 @@ namespace LCUtils
 
 		public float Angle(Vector3 other) => (float)Math.Acos(Dot(other) / (Magnitude() * other.Magnitude()));
 
+		/// <summary>
+		/// Scales each component (x, y, z) by the same component in other
+		/// </summary>
+		public void Scale(Vector3 other)
+		{
+			m_Components[0] *= other.m_Components[0];
+			m_Components[1] *= other.m_Components[1];
+			m_Components[2] *= other.m_Components[2];
+		}
+
 		#region Operator Overloads
 		/// ADD ///
 		public static Vector3 operator +(Vector3 a, Vector2 b) => new Vector3(a.x + b.x, a.y + b.y, a.z);
@@ -75,6 +89,7 @@ namespace LCUtils
 		/// MULTIPLY ///
 		public static Vector3 operator *(Vector3 a, float value) => new Vector3(a.x * value, a.y * value, a.z * value);
 		public static Vector3 operator *(float value, Vector3 a) => new Vector3(a.x * value, a.y * value, a.z * value);
+		public static Vector3 operator *(Vector3 a, Vector3 b) => new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
 
 		public static bool operator ==(Vector3 a, Vector3 b) => a.x == b.x && a.y == b.y && a.z == b.z;
 		public static bool operator !=(Vector3 a, Vector3 b) => a.x != b.x || a.y != b.y || a.z != b.z;
@@ -92,10 +107,11 @@ namespace LCUtils
 
 		public override bool Equals(object obj)
 		{
-			Vector3 other = obj as Vector3;
-			if (other == null) // not same type)
-				return false;
-			return x == other.x && y == other.y;
+			if (obj is Vector3)
+				return this == (Vector3)obj;
+			if(obj is Vector2)
+				return this == (Vector2)obj;
+			return false;
 		}
 
 		public override int GetHashCode() => base.GetHashCode();
